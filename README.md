@@ -4,4 +4,4 @@ Monitor your application with prometheus. Prometheus exporter exposes basic metr
 your applcation.
 
 # Example
-please refer this example [here](exaples/main.go)
+please refer this example [here](https://github.com/oshankkumar/prometheus-exporter/blob/master/examples/main.go)
