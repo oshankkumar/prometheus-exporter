@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"github.com/oshankkumar/prometheus-exporter/middleware"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"math/rand"
 	"net/http"
 	"strings"
 	"time"
-	"math/rand"
 )
 
 type StringSvc struct {
@@ -28,12 +28,10 @@ type CountResp struct {
 }
 
 func reverse(w http.ResponseWriter, r *http.Request) {
-	time.Sleep(time.Duration(rand.Intn(10))*time.Millisecond)
+	time.Sleep(time.Duration(rand.Intn(10)) * time.Millisecond)
 	var req = &StringSvc{}
 	if err := json.NewDecoder(r.Body).Decode(req); err != nil {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(&ErrResp{err.Error()})
+		SendError(w, err)
 		return
 	}
 	str := []rune(req.S)
@@ -46,18 +44,26 @@ func reverse(w http.ResponseWriter, r *http.Request) {
 }
 
 func count(w http.ResponseWriter, r *http.Request) {
-	time.Sleep(time.Duration(rand.Intn(10))*time.Millisecond)
+	time.Sleep(time.Duration(rand.Intn(10)) * time.Millisecond)
 	var req = &StringSvc{}
 	if err := json.NewDecoder(r.Body).Decode(req); err != nil {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(&ErrResp{err.Error()})
+		SendError(w,err)
 		return
 	}
 	substr := r.URL.Query().Get("substr")
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(CountResp{strings.Count(req.S, substr)})
+}
+
+func SendError(w http.ResponseWriter, err error) {
+	if err == nil {
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusInternalServerError)
+	json.NewEncoder(w).Encode(&ErrResp{err.Error()})
+	return
 }
 
 func main() {
