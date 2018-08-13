@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"strings"
 	"time"
-	"k8s.io/apimachinery/pkg/util/rand"
+	"math/rand"
 )
 
 type StringSvc struct {
